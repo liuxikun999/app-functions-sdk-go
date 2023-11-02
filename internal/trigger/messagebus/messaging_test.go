@@ -28,13 +28,13 @@ import (
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/di"
 	"github.com/edgexfoundry/go-mod-messaging/v3/messaging/mocks"
 
-	interfaceMocks "github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces/mocks"
+	interfaceMocks "github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces/mocks"
 
 	"github.com/stretchr/testify/mock"
 
-	sdkCommon "github.com/edgexfoundry/app-functions-sdk-go/v3/internal/common"
-	triggerMocks "github.com/edgexfoundry/app-functions-sdk-go/v3/internal/trigger/mocks"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	sdkCommon "github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
+	triggerMocks "github.com/liuxikun999/app-functions-sdk-go/v3/internal/trigger/mocks"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"

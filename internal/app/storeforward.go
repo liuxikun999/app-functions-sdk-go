@@ -22,16 +22,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/bootstrap/container"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/common"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/store/db"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/store/db/redis"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
 	bootstrapContainer "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/container"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/environment"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/secret"
 	bootstrapConfig "github.com/edgexfoundry/go-mod-bootstrap/v3/config"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/di"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/bootstrap/container"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/store/db"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/store/db/redis"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 )
 
 // RegisterCustomStoreFactory allows registration of alternative storage implementation to back the Store&Forward loop

@@ -21,11 +21,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/transforms"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/util"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/transforms"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/util"
 )
 
 const (
@@ -462,6 +462,75 @@ func (app *Configurable) MQTTExport(parameters map[string]string) interfaces.App
 	}
 	transform := transforms.NewMQTTSecretSender(mqttConfig, persistOnError)
 	return transform.MQTTSend
+}
+
+func (app *Configurable) RabbitMQExport(parameters map[string]string) interfaces.AppFunction {
+	var err error
+
+	brokerAddress, ok := parameters[BrokerAddress]
+	if !ok {
+		app.lc.Error("Could not find " + BrokerAddress)
+		return nil
+	}
+	topic, ok := parameters[Topic]
+	if !ok {
+		app.lc.Error("Could not find " + Topic)
+		return nil
+	}
+	exchangeName, ok := parameters[ExchangeName]
+	if !ok {
+		app.lc.Error("Could not find " + ExchangeName)
+		return nil
+	}
+	exchangeType, ok := parameters[ExchangeType]
+	if !ok {
+		app.lc.Error("Could not find " + ExchangeType)
+		return nil
+	}
+	routingKey, ok := parameters[RoutingKey]
+	if !ok {
+		app.lc.Error("Could not find " + RoutingKey)
+		return nil
+	}
+	mandatory := false
+	mandatoryValue, ok := parameters[Mandatory]
+	if !ok {
+		mandatory, err = strconv.ParseBool(mandatoryValue)
+		if err != nil {
+			app.lc.Errorf("Could not parse '%s' to a bool for '%s' parameter: %s", mandatoryValue, Mandatory, err.Error())
+			return nil
+		}
+	}
+	immediate := false
+	immediateValue, ok := parameters[Immediate]
+	if !ok {
+		immediate, err = strconv.ParseBool(immediateValue)
+		if err != nil {
+			app.lc.Errorf("Could not parse '%s' to a bool for '%s' parameter: %s", immediateValue, Immediate, err.Error())
+			return nil
+		}
+	}
+	rabbitMqConfig := transforms.RabbitMQSecretConfig{
+		BrokerAddress: brokerAddress,
+		Topic:         topic,
+		ExchangeName:  exchangeName,
+		ExchangeType:  exchangeType,
+		RoutingKey:    routingKey,
+		Mandatory:     mandatory,
+		Immediate:     immediate,
+	}
+	// PersistOnError is optional and is false by default.
+	persistOnError := false
+	value, ok := parameters[PersistOnError]
+	if ok {
+		persistOnError, err = strconv.ParseBool(value)
+		if err != nil {
+			app.lc.Errorf("Could not parse '%s' to a bool for '%s' parameter: %s", value, PersistOnError, err.Error())
+			return nil
+		}
+	}
+	transform := transforms.NewRabbitMQSecretSender(rabbitMqConfig, persistOnError)
+	return transform.RabbitMQSend
 }
 
 // SetResponseData sets the response data to that passed in from the previous function and the response content type

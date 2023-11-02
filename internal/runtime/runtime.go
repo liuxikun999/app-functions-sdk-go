@@ -43,9 +43,9 @@ import (
 	"github.com/fxamacker/cbor/v2"
 	gometrics "github.com/rcrowley/go-metrics"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/appfunction"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 )
 
 const (
