@@ -3,6 +3,7 @@ module github.com/liuxikun999/app-functions-sdk-go/v3
 go 1.20
 
 require (
+	github.com/streadway/amqp v1.1.0
 	github.com/diegoholiveira/jsonlogic/v3 v3.2.7
 	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/edgexfoundry/go-mod-bootstrap/v3 v3.0.1
