@@ -24,9 +24,9 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 	"github.com/google/uuid"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/appfunction"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/transforms"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/transforms"
 
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/config"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"

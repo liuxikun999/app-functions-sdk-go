@@ -28,12 +28,12 @@ import (
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/di"
 	"github.com/edgexfoundry/go-mod-messaging/v3/pkg/types"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/appfunction"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/common"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/runtime"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/trigger"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/runtime"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/trigger"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 
 	"github.com/hashicorp/go-multierror"
 	gometrics "github.com/rcrowley/go-metrics"

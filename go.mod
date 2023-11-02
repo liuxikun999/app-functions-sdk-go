@@ -1,4 +1,4 @@
-module github.com/edgexfoundry/app-functions-sdk-go/v3
+module github.com/liuxikun999/app-functions-sdk-go/v3
 
 go 1.20
 

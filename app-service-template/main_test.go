@@ -26,8 +26,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces/mocks"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces/mocks"
 )
 
 // This is an example of how to test the code that would typically be in the main() function use mocks

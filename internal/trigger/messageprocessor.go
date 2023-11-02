@@ -20,7 +20,7 @@ package trigger
 import (
 	"github.com/edgexfoundry/go-mod-messaging/v3/pkg/types"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 )
 
 type MessageProcessor interface {

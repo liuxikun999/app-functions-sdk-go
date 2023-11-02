@@ -21,9 +21,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces/mocks"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces/mocks"
 	mocks2 "github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces/mocks"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"

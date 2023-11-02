@@ -21,8 +21,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/bootstrap/container"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/config"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/bootstrap/container"
 )
 
 // ConfigUpdateProcessor contains the data need to process configuration updates

@@ -23,9 +23,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/appfunction"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/bootstrap/container"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/bootstrap/container"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 
 	bootstrapContainer "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/container"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/di"
