@@ -70,6 +70,12 @@ type TriggerInfo struct {
 	PublishTopic string
 	// Used when Type=external-mqtt
 	ExternalMqtt ExternalMqttConfig
+	// Used when Type=timer，Interval indicates the timer (in Millisecond) that will loop executing
+	Interval int
+	// Used when Type=timer，是否异步执行，异步则发MessageBus消息，同步则直接调用默认pipline，需要开启MessageBus
+	Async bool
+	// Used when Type=timer && Async=true，异步发布MessageBus的Topic
+	TimerPublishTopic string
 }
 
 // HttpConfig contains the addition configuration for HTTP Server
@@ -91,7 +97,7 @@ type ExternalMqttConfig struct {
 	Url string
 	// ClientId to connect to the broker with.
 	ClientId string
-	// ConnectTimeout is a time duration indicating how long to wait timing out on the broker connection
+	// ConnectTimeout is a timer duration indicating how long to wait timing out on the broker connection
 	ConnectTimeout string
 	// AutoReconnect indicated whether or not to retry connection if disconnected
 	AutoReconnect bool
@@ -110,7 +116,7 @@ type ExternalMqttConfig struct {
 	AuthMode string
 	// RetryDuration indicates how long (in seconds) to wait timing out on the MQTT client creation
 	RetryDuration int
-	// RetryInterval indicates the time (in seconds) that will be waited between attempts to create MQTT client
+	// RetryInterval indicates the timer (in seconds) that will be waited between attempts to create MQTT client
 	RetryInterval int
 }
 
