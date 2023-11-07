@@ -1,4 +1,4 @@
-package interfaces
+package triggers
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
 	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/trigger"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 	"strings"
 	"sync"
 	"time"
@@ -26,7 +27,7 @@ type TimerTrigger struct {
 }
 
 // Initialize initializes the Trigger for logging
-func (trigger *TimerTrigger) Initialize(_ *sync.WaitGroup, ctx context.Context, background <-chan BackgroundMessage) (bootstrap.Deferred, error) {
+func (trigger *TimerTrigger) Initialize(_ *sync.WaitGroup, ctx context.Context, background <-chan interfaces.BackgroundMessage) (bootstrap.Deferred, error) {
 	lc := trigger.serviceBinding.LoggingClient()
 	interval := trigger.serviceBinding.Config().Trigger.Interval
 
