@@ -121,8 +121,9 @@ func (sender *RabbitMQSecretSender) createRabbitMqConnect(ctx interfaces.AppFunc
 	encodedPassword := url.QueryEscape(sender.mqttConfig.Password)
 	// 构建RabbitMQ连接URL
 	rabbitMQURL := fmt.Sprintf("amqp://%s:%s@%s:%d", sender.mqttConfig.UserName, encodedPassword, sender.mqttConfig.Host, sender.mqttConfig.Port)
+	ctx.LoggingClient().Info("Connecting to : %s", rabbitMQURL)
 	connection, err := rabbitMq.Dial(rabbitMQURL)
-	if connection.IsClosed() || err != nil {
+	if connection == nil || connection.IsClosed() || err != nil {
 		sender.setRetryData(ctx, exportData)
 		subMessage := "dropping event"
 		if sender.persistOnError {
