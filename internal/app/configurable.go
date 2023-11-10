@@ -83,8 +83,12 @@ const (
 	ExchangeName        = "exchangename"
 	ExchangeType        = "exchangetype"
 	RoutingKey          = "routingKey"
-	Mandatory           = "Mandatory"
-	Immediate           = "Immediate"
+	Mandatory           = "mandatory"
+	Immediate           = "immediate"
+	UserName            = "userName"
+	Password            = "password"
+	Host                = "host"
+	Port                = "port"
 )
 
 // Configurable contains the helper functions that return the function pointers for building the configurable function pipeline.
@@ -467,9 +471,29 @@ func (app *Configurable) MQTTExport(parameters map[string]string) interfaces.App
 func (app *Configurable) RabbitMQExport(parameters map[string]string) interfaces.AppFunction {
 	var err error
 
-	brokerAddress, ok := parameters[BrokerAddress]
+	userName, ok := parameters[UserName]
 	if !ok {
-		app.lc.Error("Could not find " + BrokerAddress)
+		app.lc.Error("Could not find " + UserName)
+		return nil
+	}
+	password, ok := parameters[Password]
+	if !ok {
+		app.lc.Error("Could not find " + Password)
+		return nil
+	}
+	host, ok := parameters[Host]
+	if !ok {
+		app.lc.Error("Could not find " + Host)
+		return nil
+	}
+	portStr, ok := parameters[Port]
+	if !ok {
+		app.lc.Error("Could not find " + Port)
+		return nil
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		app.lc.Error("端口号错误，必须为整型数字：" + portStr)
 		return nil
 	}
 	topic, ok := parameters[Topic]
@@ -511,13 +535,16 @@ func (app *Configurable) RabbitMQExport(parameters map[string]string) interfaces
 		}
 	}
 	rabbitMqConfig := transforms.RabbitMQSecretConfig{
-		BrokerAddress: brokerAddress,
-		Topic:         topic,
-		ExchangeName:  exchangeName,
-		ExchangeType:  exchangeType,
-		RoutingKey:    routingKey,
-		Mandatory:     mandatory,
-		Immediate:     immediate,
+		UserName:     userName,
+		Password:     password,
+		Host:         host,
+		Port:         port,
+		Topic:        topic,
+		ExchangeName: exchangeName,
+		ExchangeType: exchangeType,
+		RoutingKey:   routingKey,
+		Mandatory:    mandatory,
+		Immediate:    immediate,
 	}
 	// PersistOnError is optional and is false by default.
 	persistOnError := false
