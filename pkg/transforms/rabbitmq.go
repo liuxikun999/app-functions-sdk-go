@@ -19,6 +19,7 @@ package transforms
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -47,8 +48,10 @@ type RabbitMQSecretSender struct {
 
 // RabbitMQSecretConfig ...
 type RabbitMQSecretConfig struct {
-	// BrokerAddress should be set to the complete broker address i.e. amqp://username:password@localhost:5672/
-	BrokerAddress string
+	UserName string
+	Password string
+	Host     string
+	Port     int
 	// ClientId to connect with the broker with.
 	ClientId string
 	// The name of the secret in secret provider to retrieve your secrets
@@ -114,7 +117,11 @@ func (sender *RabbitMQSecretSender) createRabbitMqConnect(ctx interfaces.AppFunc
 	}
 
 	ctx.LoggingClient().Info("Connecting to rabbitmq server for export")
-	connection, err := rabbitMq.Dial(sender.mqttConfig.BrokerAddress)
+	// 对密码进行URL编码
+	encodedPassword := url.QueryEscape(sender.mqttConfig.Password)
+	// 构建RabbitMQ连接URL
+	rabbitMQURL := fmt.Sprintf("amqp://%s:%s@%s:%d", sender.mqttConfig.UserName, encodedPassword, sender.mqttConfig.Host, sender.mqttConfig.Port)
+	connection, err := rabbitMq.Dial(rabbitMQURL)
 	if connection.IsClosed() || err != nil {
 		sender.setRetryData(ctx, exportData)
 		subMessage := "dropping event"
@@ -206,7 +213,7 @@ func (sender *RabbitMQSecretSender) RabbitMQSend(ctx interfaces.AppFunctionConte
 	exportDataBytes := len(exportData)
 	if sender.mqttSizeMetrics == nil {
 		var err error
-		tag := fmt.Sprintf("%s/%s", sender.mqttConfig.BrokerAddress, publishTopic)
+		tag := fmt.Sprintf("%s:%s@%s:%d/%s", sender.mqttConfig.UserName, sender.mqttConfig.Password, sender.mqttConfig.Host, sender.mqttConfig.Port, publishTopic)
 		metricName := fmt.Sprintf("%s-%s", internal.MqttExportSizeName, tag)
 		ctx.LoggingClient().Debugf("Initializing metric %s.", metricName)
 		sender.mqttSizeMetrics = gometrics.NewHistogram(gometrics.NewUniformSample(internal.MetricsReservoirSize))
