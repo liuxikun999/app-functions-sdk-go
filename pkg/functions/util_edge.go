@@ -78,6 +78,8 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 		Value: strconv.FormatFloat(cpuUsedPercent[0], 'f', 2, 64),
 		Time:  time.Now().UnixMilli(),
 	}
+	fmt.Println("cpuUsedPercent:", cpuUsedPercent)
+
 	//获取物理内存信息
 	memoryInfo, _ := mem.VirtualMemory()
 	fmt.Println("memoryInfo:", memoryInfo)
