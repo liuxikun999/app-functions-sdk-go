@@ -74,7 +74,7 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 	fmt.Println(cpuUsedPercent)
 	cpuUsedPercentItem := &ItemInfo{
 		Code:  "cpu_rate",
-		Value: cpuUsedPercent,
+		Value: cpuUsedPercent[0],
 		Time:  time.Now().UnixMilli(),
 	}
 	//获取物理内存信息
