@@ -84,7 +84,7 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 	// 内存使用率
 	memoryUsedPercentItem := &ItemInfo{
 		Code:  "memory_rate",
-		Value: strconv.FormatFloat(1-float64(memoryInfo.Available)/float64(memoryInfo.Total), 'f', 2, 64),
+		Value: strconv.FormatFloat(100*(1-float64(memoryInfo.Available)/float64(memoryInfo.Total)), 'f', 2, 64),
 		Time:  time.Now().UnixMilli(),
 	}
 	// 内存总大小
