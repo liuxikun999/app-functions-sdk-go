@@ -11,6 +11,7 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -74,7 +75,7 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 	fmt.Println(cpuUsedPercent)
 	cpuUsedPercentItem := &ItemInfo{
 		Code:  "cpu_rate",
-		Value: cpuUsedPercent[0],
+		Value: strconv.FormatFloat(cpuUsedPercent[0], 'f', 2, 64),
 		Time:  time.Now().UnixMilli(),
 	}
 	//获取物理内存信息
@@ -83,7 +84,7 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 	// 内存使用率
 	memoryUsedPercentItem := &ItemInfo{
 		Code:  "memory_rate",
-		Value: memoryInfo.UsedPercent,
+		Value: strconv.FormatFloat(memoryInfo.UsedPercent, 'f', 2, 64),
 		Time:  time.Now().UnixMilli(),
 	}
 	// 内存总大小
@@ -104,7 +105,7 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 	// 硬盘使用率
 	diskUsedPercentItem := &ItemInfo{
 		Code:  "disk_rate",
-		Value: diskUsage.UsedPercent,
+		Value: strconv.FormatFloat(diskUsage.UsedPercent, 'f', 2, 64),
 		Time:  time.Now().UnixMilli(),
 	}
 	// 硬盘总大小
