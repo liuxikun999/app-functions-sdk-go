@@ -84,13 +84,19 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 	// 内存使用率
 	memoryUsedPercentItem := &ItemInfo{
 		Code:  "memory_rate",
-		Value: strconv.FormatFloat(memoryInfo.UsedPercent, 'f', 2, 64),
+		Value: strconv.FormatFloat(1-float64(memoryInfo.Available)/float64(memoryInfo.Total), 'f', 2, 64),
 		Time:  time.Now().UnixMilli(),
 	}
 	// 内存总大小
 	memoryTotalItem := &ItemInfo{
 		Code:  "memory_total",
 		Value: memoryInfo.Total,
+		Time:  time.Now().UnixMilli(),
+	}
+	// 内存总大小
+	memoryAvailableItem := &ItemInfo{
+		Code:  "memory_available",
+		Value: memoryInfo.Available,
 		Time:  time.Now().UnixMilli(),
 	}
 
@@ -114,7 +120,7 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 		Value: diskUsage.Total,
 		Time:  time.Now().UnixMilli(),
 	}
-	statusArray = append(statusArray, *cpuUsedPercentItem, *memoryTotalItem, *memoryUsedPercentItem, *diskUsedPercentItem, *diskTotalPercentItem)
+	statusArray = append(statusArray, *cpuUsedPercentItem, *memoryTotalItem, *memoryAvailableItem, *memoryUsedPercentItem, *diskUsedPercentItem, *diskTotalPercentItem)
 
 	serviceUrls := strings.Split(s.serviceUrls, ",")
 	serviceNames := strings.Split(s.serviceNames, ",")
