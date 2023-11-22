@@ -6,13 +6,13 @@ go 1.21
 
 // To build local docker image of the template App you must
 // comment out this replace statement and update the SDK version to latest
-replace github.com/liuxikun999/app-functions-sdk-go/v3 => ../
+replace github.com/liuxikun999/app-functions-sdk-go/v3 => ./
 
 require (
-	github.com/liuxikun999/app-functions-sdk-go/v3 v3.1.0
 	github.com/edgexfoundry/go-mod-core-contracts/v3 v3.1.0
 	github.com/google/uuid v1.3.1
 	github.com/labstack/echo/v4 v4.11.2
+	github.com/liuxikun999/app-functions-sdk-go/v3 v3.1.0-dev.51.0.20231122022344-e9d3ae50f0bc
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/stretchr/testify v1.8.4
 )
