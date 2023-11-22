@@ -19,8 +19,8 @@ package app
 
 import (
 	"fmt"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/appfunction"
 	"github.com/google/uuid"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"

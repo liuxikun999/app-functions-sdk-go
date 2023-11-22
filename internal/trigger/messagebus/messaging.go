@@ -24,7 +24,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/container"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/di"
@@ -32,10 +31,11 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-messaging/v3/messaging"
 	"github.com/edgexfoundry/go-mod-messaging/v3/pkg/types"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/trigger"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/util"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/trigger"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/util"
 )
 
 // Trigger implements Trigger to support MessageBusData

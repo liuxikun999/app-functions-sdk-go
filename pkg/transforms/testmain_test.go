@@ -24,9 +24,9 @@ import (
 	commonDtos "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/appfunction"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/bootstrap/container"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/common"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/bootstrap/container"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 

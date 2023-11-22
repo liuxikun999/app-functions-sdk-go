@@ -30,8 +30,8 @@ import (
 	"github.com/edgexfoundry/go-mod-messaging/v3/pkg/types"
 	"github.com/google/uuid"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/bootstrap/container"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/bootstrap/container"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 
 	clients "github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"

@@ -20,9 +20,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces/mocks"
 	mocks2 "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/interfaces/mocks"
 	loggerMocks "github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger/mocks"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces/mocks"
 	gometrics "github.com/rcrowley/go-metrics"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

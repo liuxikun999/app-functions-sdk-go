@@ -26,11 +26,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/common"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/trigger"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/secure"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/util"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/trigger"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/secure"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/util"
 
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/messaging"

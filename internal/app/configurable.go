@@ -22,12 +22,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/common"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/transforms"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/util"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 	coreCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/transforms"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/util"
 )
 
 const (
@@ -88,6 +88,15 @@ const (
 	WillQos             = "willqos"
 	WillPayload         = "willpayload"
 	WillRetained        = "willretained"
+	ExchangeName        = "exchangename"
+	ExchangeType        = "exchangetype"
+	RoutingKey          = "routingKey"
+	Mandatory           = "mandatory"
+	Immediate           = "immediate"
+	UserName            = "userName"
+	Password            = "password"
+	Host                = "host"
+	Port                = "port"
 )
 
 // Configurable contains the helper functions that return the function pointers for building the configurable function pipeline.
@@ -376,6 +385,98 @@ func (app *Configurable) HTTPExport(parameters map[string]string) interfaces.App
 			ExportMethodPut)
 		return nil
 	}
+}
+
+func (app *Configurable) RabbitMQExport(parameters map[string]string) interfaces.AppFunction {
+	var err error
+
+	userName, ok := parameters[UserName]
+	if !ok {
+		app.lc.Error("Could not find " + UserName)
+		return nil
+	}
+	password, ok := parameters[Password]
+	if !ok {
+		app.lc.Error("Could not find " + Password)
+		return nil
+	}
+	host, ok := parameters[Host]
+	if !ok {
+		app.lc.Error("Could not find " + Host)
+		return nil
+	}
+	portStr, ok := parameters[Port]
+	if !ok {
+		app.lc.Error("Could not find " + Port)
+		return nil
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		app.lc.Error("端口号错误，必须为整型数字：" + portStr)
+		return nil
+	}
+	topic, ok := parameters[Topic]
+	if !ok {
+		app.lc.Error("Could not find " + Topic)
+		return nil
+	}
+	exchangeName, ok := parameters[ExchangeName]
+	if !ok {
+		app.lc.Error("Could not find " + ExchangeName)
+		return nil
+	}
+	exchangeType, ok := parameters[ExchangeType]
+	if !ok {
+		app.lc.Error("Could not find " + ExchangeType)
+		return nil
+	}
+	routingKey, ok := parameters[RoutingKey]
+	if !ok {
+		app.lc.Error("Could not find " + RoutingKey)
+		return nil
+	}
+	mandatory := false
+	mandatoryValue, ok := parameters[Mandatory]
+	if !ok {
+		mandatory, err = strconv.ParseBool(mandatoryValue)
+		if err != nil {
+			app.lc.Errorf("Could not parse '%s' to a bool for '%s' parameter: %s", mandatoryValue, Mandatory, err.Error())
+			return nil
+		}
+	}
+	immediate := false
+	immediateValue, ok := parameters[Immediate]
+	if !ok {
+		immediate, err = strconv.ParseBool(immediateValue)
+		if err != nil {
+			app.lc.Errorf("Could not parse '%s' to a bool for '%s' parameter: %s", immediateValue, Immediate, err.Error())
+			return nil
+		}
+	}
+	rabbitMqConfig := transforms.RabbitMQSecretConfig{
+		UserName:     userName,
+		Password:     password,
+		Host:         host,
+		Port:         port,
+		Topic:        topic,
+		ExchangeName: exchangeName,
+		ExchangeType: exchangeType,
+		RoutingKey:   routingKey,
+		Mandatory:    mandatory,
+		Immediate:    immediate,
+	}
+	// PersistOnError is optional and is false by default.
+	persistOnError := false
+	value, ok := parameters[PersistOnError]
+	if ok {
+		persistOnError, err = strconv.ParseBool(value)
+		if err != nil {
+			app.lc.Errorf("Could not parse '%s' to a bool for '%s' parameter: %s", value, PersistOnError, err.Error())
+			return nil
+		}
+	}
+	transform := transforms.NewRabbitMQSecretSender(rabbitMqConfig, persistOnError)
+	return transform.RabbitMQSend
 }
 
 // MQTTExport will send data from the previous function to the specified Endpoint via MQTT publish. If no previous function exists,

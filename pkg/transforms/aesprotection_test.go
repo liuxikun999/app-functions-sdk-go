@@ -22,13 +22,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/etm"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces/mocks"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/util"
 	bootstrapMocks "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/interfaces/mocks"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/google/uuid"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/etm"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces/mocks"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

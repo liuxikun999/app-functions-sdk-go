@@ -22,7 +22,7 @@ import (
 	"compress/gzip"
 	"compress/zlib"
 	"encoding/base64"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 	"io"
 	"sync"
 	"testing"

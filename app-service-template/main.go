@@ -27,9 +27,9 @@ import (
 	"app-new-service/config"
 	"app-new-service/functions"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/transforms"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/transforms"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 )
 

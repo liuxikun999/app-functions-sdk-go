@@ -20,8 +20,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/bootstrap/container"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/bootstrap/container"
 
 	bootstrapContainer "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/container"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/secret"

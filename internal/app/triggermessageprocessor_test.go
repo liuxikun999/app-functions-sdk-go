@@ -31,10 +31,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/appfunction"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/runtime"
-	triggerMocks "github.com/edgexfoundry/app-functions-sdk-go/v3/internal/trigger/mocks"
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/pkg/interfaces"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/appfunction"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/runtime"
+	triggerMocks "github.com/liuxikun999/app-functions-sdk-go/v3/internal/trigger/mocks"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 )
 
 func Test_simpleTriggerServiceBinding_BuildContext(t *testing.T) {

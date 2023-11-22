@@ -26,12 +26,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/edgexfoundry/app-functions-sdk-go/v3/internal/bootstrap/container"
 	bootstrapContainer "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/container"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/interfaces"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/config"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/bootstrap/container"
 
-	appCommon "github.com/edgexfoundry/app-functions-sdk-go/v3/internal/common"
 	bootstrapMocks "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/interfaces/mocks"
 	clients "github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http"
 	clientMocks "github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces/mocks"
@@ -39,6 +38,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
 	messageMocks "github.com/edgexfoundry/go-mod-messaging/v3/messaging/mocks"
+	appCommon "github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
 
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/interfaces/mocks"
 	"github.com/edgexfoundry/go-mod-bootstrap/v3/di"
