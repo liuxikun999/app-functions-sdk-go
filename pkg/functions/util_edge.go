@@ -163,7 +163,9 @@ func (s *UtilEdge) CollectGatewayInfo(ctx interfaces.AppFunctionContext, data in
 
 func (s *UtilEdge) doGet(url string) (PingResponse, error) {
 	var res PingResponse
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: time.Second * 30, // 设置超时时间为30秒
+	}
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		fmt.Errorf("ping service failed : %s", err.Error())
