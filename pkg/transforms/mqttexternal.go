@@ -48,6 +48,7 @@ type MQTTExternalConfig struct {
 	SecretName string
 	// AutoReconnect indicated whether or not to retry connection if disconnected
 	AutoReconnect bool
+	Enable        bool
 	// KeepAlive is the interval duration between client sending keepalive ping to broker
 	KeepAlive string
 	// ConnectTimeout is the duration for timing out on connecting to the broker
