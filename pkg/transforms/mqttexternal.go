@@ -87,7 +87,7 @@ func NewMQTTExternalClient(mqttConfig MQTTExternalConfig) *MQTTExternalClient {
 	return sender
 }
 
-func (sender *MQTTExternalClient) initializeMQTTExternalClient(ctx interfaces.AppFunctionContext, messageHandler MQTT.MessageHandler) error {
+func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.AppFunctionContext, messageHandler MQTT.MessageHandler) error {
 	sender.lock.Lock()
 	defer sender.lock.Unlock()
 
