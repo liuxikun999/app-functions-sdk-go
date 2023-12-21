@@ -17,14 +17,15 @@
 package transforms
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/edgexfoundry/go-mod-messaging/v3/pkg/types"
 	"strings"
 	"sync"
 	"time"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/liuxikun999/app-functions-sdk-go/v3/internal/common"
-
 	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/interfaces"
 	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/secure"
 )
@@ -88,7 +89,7 @@ func NewMQTTExternalClient(mqttConfig MQTTExternalConfig) *MQTTExternalClient {
 	return sender
 }
 
-func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.AppFunctionContext, messageHandler MQTT.MessageHandler) error {
+func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.AppFunctionContext) error {
 	sender.lock.Lock()
 	defer sender.lock.Unlock()
 
@@ -131,23 +132,61 @@ func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.Ap
 
 	sender.client = client
 
-	// 订阅Topic
-	subscribeTopics := strings.TrimSpace(config.SubscribeTopics)
-	topics := strings.Split(subscribeTopics, ",")
-	if len(topics) > 0 {
-		if err := sender.client.Subscribe(subscribeTopics, config.QoS, messageHandler); err != nil {
-			return fmt.Errorf("failed to subscribe to topic(s) '%s': %s", subscribeTopics, err.Error())
-		}
-		sender.subscriptionMutex.Lock()
-		defer sender.subscriptionMutex.Unlock()
+	return nil
+}
 
+func (sender *MQTTExternalClient) Subscribe(topics []types.TopicChannel, messageErrors chan error) error {
+	sender.subscriptionMutex.Lock()
+	defer sender.subscriptionMutex.Unlock()
+	// 订阅Topic
+	optionsReader := sender.client.OptionsReader()
+	if len(topics) > 0 {
 		for _, topic := range topics {
-			if err := sender.client.Subscribe(topic, config.QoS, messageHandler); err != nil {
-				return fmt.Errorf("failed to subscribe to topic(s) '%s': %s", topic, err.Error())
+			handler := newMessageHandler(topic.Messages, messageErrors)
+			qos := optionsReader.WillQos()
+
+			token := sender.client.Subscribe(topic.Topic, qos, handler)
+			err := getTokenError(token, optionsReader.ConnectTimeout(), "Subscribe", "Failed to create external subscription")
+			if err != nil {
+				return err
 			}
 		}
 	}
 	return nil
+}
+
+func getTokenError(token MQTT.Token, timeout time.Duration, operation string, defaultTimeoutMessage string) error {
+	hasTimedOut := !token.WaitTimeout(timeout)
+
+	if hasTimedOut && token.Error() != nil {
+		return fmt.Errorf(operation, token.Error().Error())
+	}
+
+	if hasTimedOut && token.Error() == nil {
+		return fmt.Errorf(operation, defaultTimeoutMessage)
+	}
+
+	if token.Error() != nil {
+		return fmt.Errorf(operation, token.Error().Error())
+	}
+
+	return nil
+}
+
+func newMessageHandler(
+	messageChannel chan<- types.MessageEnvelope,
+	errorChannel chan<- error) MQTT.MessageHandler {
+	return func(client MQTT.Client, message MQTT.Message) {
+		var messageEnvelope types.MessageEnvelope
+		payload := message.Payload()
+		err := json.Unmarshal(payload, &messageEnvelope)
+		if err != nil {
+			errorChannel <- err
+			return
+		}
+		messageEnvelope.ReceivedTopic = message.Topic()
+		messageChannel <- messageEnvelope
+	}
 }
 
 func (sender *MQTTExternalClient) connectToExternalBroker(ctx interfaces.AppFunctionContext) error {
