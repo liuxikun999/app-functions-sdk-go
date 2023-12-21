@@ -47,6 +47,8 @@ type MQTTExternalConfig struct {
 	ClientId string
 	// The name of the secret in secret provider to retrieve your secrets
 	SecretName string
+	Username   string
+	Password   string
 	// AutoReconnect indicated whether or not to retry connection if disconnected
 	AutoReconnect bool
 	Enable        bool
@@ -77,6 +79,8 @@ func NewMQTTExternalClient(mqttConfig MQTTExternalConfig) *MQTTExternalClient {
 	opts.AddBroker(mqttConfig.BrokerAddress)
 	opts.SetClientID(mqttConfig.ClientId)
 	opts.SetAutoReconnect(mqttConfig.AutoReconnect)
+	opts.SetUsername(mqttConfig.Username)
+	opts.SetPassword(mqttConfig.Password)
 
 	//avoid casing issues
 	mqttConfig.AuthMode = strings.ToLower(mqttConfig.AuthMode)
