@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/edgexfoundry/go-mod-messaging/v3/messaging"
 	nethttp "net/http"
 	"os"
 	"os/signal"
@@ -787,4 +788,12 @@ func (svc *Service) PublishWithTopic(topic string, data any, contentType string)
 	}
 
 	return nil
+}
+
+func (svc *Service) MessageBusClient() (messaging.MessageClient, error) {
+	messageClient := bootstrapContainer.MessagingClientFrom(svc.dic.Get)
+	if messageClient == nil {
+		return nil, fmt.Errorf(messageBusDisabledErr)
+	}
+	return messageClient, nil
 }
