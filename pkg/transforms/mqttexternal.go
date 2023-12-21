@@ -89,7 +89,7 @@ func NewMQTTExternalClient(mqttConfig MQTTExternalConfig) *MQTTExternalClient {
 	return sender
 }
 
-func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.AppFunctionContext) error {
+func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.ApplicationService) error {
 	sender.lock.Lock()
 	defer sender.lock.Unlock()
 
@@ -105,7 +105,7 @@ func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.Ap
 	if len(sender.mqttConfig.KeepAlive) > 0 {
 		keepAlive, err := time.ParseDuration(sender.mqttConfig.KeepAlive)
 		if err != nil {
-			return fmt.Errorf("in pipeline '%s', unable to parse KeepAlive value of '%s': %s", ctx.PipelineId(), sender.mqttConfig.KeepAlive, err.Error())
+			return fmt.Errorf("unable to parse KeepAlive value of '%s': %s", sender.mqttConfig.KeepAlive, err.Error())
 		}
 
 		sender.opts.SetKeepAlive(keepAlive)
@@ -114,7 +114,7 @@ func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.Ap
 	if len(sender.mqttConfig.ConnectTimeout) > 0 {
 		timeout, err := time.ParseDuration(sender.mqttConfig.ConnectTimeout)
 		if err != nil {
-			return fmt.Errorf("in pipeline '%s', unable to parse ConnectTimeout value of '%s': %s", ctx.PipelineId(), sender.mqttConfig.ConnectTimeout, err.Error())
+			return fmt.Errorf("unable to parse ConnectTimeout value of '%s': %s", sender.mqttConfig.ConnectTimeout, err.Error())
 		}
 
 		sender.opts.SetConnectTimeout(timeout)
@@ -127,7 +127,7 @@ func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.Ap
 
 	client, err := mqttFactory.Create(sender.opts)
 	if err != nil {
-		return fmt.Errorf("in pipeline '%s', unable to create MQTT Client: %s", ctx.PipelineId(), err.Error())
+		return fmt.Errorf("unable to create MQTT Client: %s", err.Error())
 	}
 
 	sender.client = client
