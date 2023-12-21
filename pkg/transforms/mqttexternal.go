@@ -132,8 +132,18 @@ func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.Ap
 	}
 
 	sender.client = client
+	// Avoid reconnecting if already connected.
+	if sender.client.IsConnected() {
+		return nil
+	}
 
-	return nil
+	optionsReader := sender.client.OptionsReader()
+
+	return getTokenError(
+		sender.client.Connect(),
+		optionsReader.ConnectTimeout(),
+		"Connect",
+		"Unable to connect")
 }
 
 func (sender *MQTTExternalClient) Subscribe(topics []types.TopicChannel, messageErrors chan error) error {
