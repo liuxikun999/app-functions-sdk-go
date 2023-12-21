@@ -81,9 +81,10 @@ func NewMQTTExternalClient(mqttConfig MQTTExternalConfig) *MQTTExternalClient {
 	//avoid casing issues
 	mqttConfig.AuthMode = strings.ToLower(mqttConfig.AuthMode)
 	sender := &MQTTExternalClient{
-		client:     nil,
-		mqttConfig: mqttConfig,
-		opts:       opts,
+		client:            nil,
+		mqttConfig:        mqttConfig,
+		opts:              opts,
+		subscriptionMutex: new(sync.Mutex),
 	}
 
 	return sender
