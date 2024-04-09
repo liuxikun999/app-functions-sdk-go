@@ -25,6 +25,7 @@ import (
 	gometrics "github.com/rcrowley/go-metrics"
 	mongo "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -44,6 +45,7 @@ type MongoSecretClient struct {
 
 // MongoSecretConfig ...
 type MongoSecretConfig struct {
+	Enable       bool
 	UserName     string
 	Password     string
 	DatabaseName string
@@ -59,20 +61,10 @@ type MongoSecretConfig struct {
 	KeepAlive string
 	// ConnectTimeout is the duration for timing out on connecting to the broker
 	ConnectTimeout string
-	// Topic that you wish to publish to
-	Topic string
-	// ExchangeName that you wish to Declare to
-	ExchangeName string
-	ExchangeType string
-	RoutingKey   string
-	Mandatory    bool
-	Immediate    bool
 	// QoS for MQTT Connection
 	QoS byte
 	// Retain setting for MQTT Connection
 	Retain bool
-	// SkipCertVerify
-	SkipCertVerify bool
 	// AuthMode indicates what to use when connecting to the broker. Options are "none", "cacert" , "usernamepassword", "clientcert".
 	// If a CA Cert exists in the SecretName then it will be used for all modes except "none".
 	AuthMode string
@@ -93,7 +85,8 @@ func NewMongoSecretClient(mongoConfig MongoSecretConfig) *MongoSecretClient {
 func (sender *MongoSecretClient) createMongoClient(ctx interfaces.AppFunctionContext) error {
 	sender.lock.Lock()
 	defer sender.lock.Unlock()
-	uri := "mongodb://" + sender.mongoConfig.UserName + ":" + sender.mongoConfig.Password + "@" + sender.mongoConfig.Host + ":" + string(sender.mongoConfig.Port)
+	portString := strconv.Itoa(sender.mongoConfig.Port)
+	uri := "mongodb://" + sender.mongoConfig.UserName + ":" + sender.mongoConfig.Password + "@" + sender.mongoConfig.Host + ":" + portString
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		return fmt.Errorf("in pipeline '%s', could not connect to Mongo server for export. Error: %s", ctx.PipelineId(), err.Error())
