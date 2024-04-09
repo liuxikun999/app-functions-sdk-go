@@ -17,7 +17,6 @@ package interfaces
 
 import (
 	"context"
-	"github.com/edgexfoundry/go-mod-messaging/v3/messaging"
 	"net/http"
 	"time"
 
@@ -201,6 +200,4 @@ type ApplicationService interface {
 	Publish(data any, contentType string) error
 	// PublishWithTopic pushes data to the MessageBus using given topic
 	PublishWithTopic(topic string, data any, contentType string) error
-	// MessageBusClient 获取MessageBus客户端
-	MessageBusClient() (messaging.MessageClient, error)
 }
