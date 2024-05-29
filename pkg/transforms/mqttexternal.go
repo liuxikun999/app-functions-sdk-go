@@ -19,7 +19,11 @@ package transforms
 import (
 	"encoding/json"
 	"fmt"
+	bootstrapInterfaces "github.com/edgexfoundry/go-mod-bootstrap/v3/bootstrap/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
+	coreCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-messaging/v3/pkg/types"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/util"
 	"strings"
 	"sync"
 	"time"
@@ -95,6 +99,10 @@ func NewMQTTExternalClient(mqttConfig MQTTExternalConfig) *MQTTExternalClient {
 }
 
 func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.ApplicationService) error {
+	return sender.initializeMqttExternalClientPrivate(ctx.SecretProvider(), ctx.LoggingClient())
+}
+
+func (sender *MQTTExternalClient) initializeMqttExternalClientPrivate(secretProvider bootstrapInterfaces.SecretProvider, loggingClient logger.LoggingClient) error {
 	sender.lock.Lock()
 	defer sender.lock.Unlock()
 
@@ -102,10 +110,10 @@ func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.Ap
 		return nil
 	}
 
-	ctx.LoggingClient().Info("Initializing MQTTExternalClient")
+	loggingClient.Info("Initializing MQTTExternalClient")
 
 	config := sender.mqttConfig
-	mqttFactory := secure.NewMqttFactory(ctx.SecretProvider(), ctx.LoggingClient(), config.AuthMode, config.SecretName, config.SkipCertVerify)
+	mqttFactory := secure.NewMqttFactory(secretProvider, loggingClient, config.AuthMode, config.SecretName, config.SkipCertVerify)
 
 	if len(sender.mqttConfig.KeepAlive) > 0 {
 		keepAlive, err := time.ParseDuration(sender.mqttConfig.KeepAlive)
@@ -127,7 +135,7 @@ func (sender *MQTTExternalClient) InitializeMQTTExternalClient(ctx interfaces.Ap
 
 	if config.Will.Enabled {
 		sender.opts.SetWill(config.Will.Topic, config.Will.Payload, config.Will.Qos, config.Will.Retained)
-		ctx.LoggingClient().Infof("Last Will options set for MQTT Export: %+v", config.Will)
+		loggingClient.Infof("Last Will options set for MQTT Export: %+v", config.Will)
 	}
 
 	client, err := mqttFactory.Create(sender.opts)
@@ -229,5 +237,51 @@ func (sender *MQTTExternalClient) MQTTExternalPublish(topic string, payload stri
 	if err := sender.client.Publish(topic, sender.mqttConfig.QoS, sender.mqttConfig.Retain, payload); err != nil {
 		return false, fmt.Errorf("could not Publish to mqtt external server, topic: %s, payload: %s,  Error: %s", topic, payload, err.Error())
 	}
+	return true, nil
+}
+
+func (sender *MQTTExternalClient) MQTTExternalSend(ctx interfaces.AppFunctionContext, data interface{}) (bool, interface{}) {
+	if data == nil {
+		// We didn't receive a result
+		return false, fmt.Errorf("function MQTTSend in pipeline '%s': No Data Received", ctx.PipelineId())
+	}
+
+	exportData, err := util.CoerceType(data)
+	if err != nil {
+		return false, err
+	}
+	// if we haven't initialized the client yet OR the cache has been invalidated (due to new/updated secrets) we need to (re)initialize the client
+	if sender.client == nil {
+		err := sender.initializeMqttExternalClientPrivate(ctx.SecretProvider(), ctx.LoggingClient())
+		if err != nil {
+			return false, err
+		}
+	}
+
+	publishTopic := sender.mqttConfig.Topic
+
+	if !sender.client.IsConnected() {
+		err := sender.connectToExternalBroker(ctx)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	if !sender.client.IsConnectionOpen() {
+		return false, fmt.Errorf("in pipeline '%s', 连接外部MQTT服务器失败", ctx.PipelineId())
+	}
+
+	token := sender.client.Publish(publishTopic, sender.mqttConfig.QoS, sender.mqttConfig.Retain, exportData)
+	token.Wait()
+	if token.Error() != nil {
+		return false, token.Error()
+	}
+
+	// capture the size for metrics
+	exportDataBytes := len(exportData)
+
+	ctx.LoggingClient().Debugf("Sent %d bytes of data to MQTT External Broker in pipeline '%s'", exportDataBytes, ctx.PipelineId())
+	ctx.LoggingClient().Tracef("Data exported", "Transport", "ExternalMQTT", "pipeline", ctx.PipelineId(), coreCommon.CorrelationHeader, ctx.CorrelationID())
+
 	return true, nil
 }
