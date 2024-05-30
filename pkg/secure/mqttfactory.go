@@ -69,6 +69,8 @@ func (factory MqttFactory) Create(opts *mqtt.ClientOptions) (mqtt.Client, error)
 		if err != nil {
 			return nil, err
 		}
+	} else if opts.Username != "" {
+		factory.opts.SetUsername(opts.Username)
 	}
 
 	return mqtt.NewClient(factory.opts), nil
