@@ -20,3 +20,16 @@ type RabbitMQInfo struct {
 	Mandatory      bool
 	Immediate      bool
 }
+
+type ThingsBoardMessageEnvelope struct {
+	Device        string                 `json:"device"`
+	Data          map[string]interface{} `json:"data"`
+	ReceivedTopic string                 `json:"receivedTopic"`
+}
+
+type ThingsBoardTopicChannel struct {
+	// Topic for subscriber to filter on if any
+	Topic string
+	// Messages is the returned message channel for the subscriber
+	Messages chan ThingsBoardMessageEnvelope
+}

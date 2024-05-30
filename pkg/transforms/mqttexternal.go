@@ -23,6 +23,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/logger"
 	coreCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-messaging/v3/pkg/types"
+	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/config"
 	"github.com/liuxikun999/app-functions-sdk-go/v3/pkg/util"
 	"strings"
 	"sync"
@@ -178,6 +179,26 @@ func (sender *MQTTExternalClient) Subscribe(topics []types.TopicChannel, message
 	return nil
 }
 
+func (sender *MQTTExternalClient) SubscribeThingsBoardTopics(topics []config.ThingsBoardTopicChannel, messageErrors chan error) error {
+	sender.subscriptionMutex.Lock()
+	defer sender.subscriptionMutex.Unlock()
+	// 订阅Topic
+	optionsReader := sender.client.OptionsReader()
+	if len(topics) > 0 {
+		for _, topic := range topics {
+			handler := newThingsBoardMessageHandler(topic.Messages, messageErrors)
+			qos := optionsReader.WillQos()
+
+			token := sender.client.Subscribe(topic.Topic, qos, handler)
+			err := getTokenError(token, optionsReader.ConnectTimeout(), "Subscribe", "Failed to create external subscription")
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func getTokenError(token MQTT.Token, timeout time.Duration, operation string, defaultTimeoutMessage string) error {
 	hasTimedOut := !token.WaitTimeout(timeout)
 
@@ -201,6 +222,21 @@ func newMessageHandler(
 	errorChannel chan<- error) MQTT.MessageHandler {
 	return func(client MQTT.Client, message MQTT.Message) {
 		var messageEnvelope types.MessageEnvelope
+		payload := message.Payload()
+		err := json.Unmarshal(payload, &messageEnvelope)
+		if err != nil {
+			errorChannel <- err
+			return
+		}
+		messageEnvelope.ReceivedTopic = message.Topic()
+		messageChannel <- messageEnvelope
+	}
+}
+func newThingsBoardMessageHandler(
+	messageChannel chan<- config.ThingsBoardMessageEnvelope,
+	errorChannel chan<- error) MQTT.MessageHandler {
+	return func(client MQTT.Client, message MQTT.Message) {
+		var messageEnvelope config.ThingsBoardMessageEnvelope
 		payload := message.Payload()
 		err := json.Unmarshal(payload, &messageEnvelope)
 		if err != nil {
