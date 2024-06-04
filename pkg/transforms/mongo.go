@@ -85,6 +85,9 @@ func NewMongoSecretClient(mongoConfig MongoSecretConfig) *MongoSecretClient {
 func (sender *MongoSecretClient) createMongoClient(ctx interfaces.AppFunctionContext) error {
 	sender.lock.Lock()
 	defer sender.lock.Unlock()
+	if sender.client != nil {
+		return nil
+	}
 	portString := strconv.Itoa(sender.mongoConfig.Port)
 	uri := "mongodb://" + sender.mongoConfig.UserName + ":" + sender.mongoConfig.Password + "@" + sender.mongoConfig.Host + ":" + portString
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
