@@ -11,6 +11,7 @@ require (
 	github.com/edgexfoundry/go-mod-registry/v3 v3.1.0
 	github.com/fxamacker/cbor/v2 v2.5.0
 	github.com/go-jose/go-jose/v3 v3.0.0
+	github.com/go-sql-driver/mysql v1.8.1
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/uuid v1.3.1
 	github.com/hashicorp/go-multierror v1.1.1
@@ -23,6 +24,7 @@ require (
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
