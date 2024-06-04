@@ -69,7 +69,11 @@ type MysqlSecretConfig struct {
 	AuthMode string
 }
 
-type InsertSQLParams struct {
+type ExecuteSQLEvent struct {
+	events []ExecuteSQLParams
+}
+
+type ExecuteSQLParams struct {
 	sql    string
 	params []interface{}
 }
@@ -126,13 +130,27 @@ func (sender *MysqlSecretClient) DisconnectMysqlSecretClient() error {
 	return nil
 }
 
+// executeSql 执行sql
+func (sender *MysqlSecretClient) executeSql(sql string, params []interface{}) (bool, error) {
+	stmt, err := sender.client.Prepare(sql)
+	defer stmt.Close()
+	if err != nil {
+		return false, fmt.Errorf("prepare sql failed, Error: %s", err.Error())
+	}
+	_, err = stmt.Exec(params...)
+	if err != nil {
+		return false, fmt.Errorf("执行sql失败, Error: %s", err.Error())
+	}
+	return true, nil
+}
+
 // EventExportToMysql 备份事件到mysql
 func (sender *MysqlSecretClient) EventExportToMysql(ctx interfaces.AppFunctionContext, data interface{}) (bool, interface{}) {
 	if data == nil {
 		// We didn't receive a result
 		return false, fmt.Errorf("function EventExportToMysql in pipeline '%s': No Data Received", ctx.PipelineId())
 	}
-	event, ok := data.(InsertSQLParams)
+	event, ok := data.(ExecuteSQLEvent)
 	if !ok {
 		return false, fmt.Errorf("function ConvertEventToCloud in pipeline '%s', type received is not an Event", ctx.PipelineId())
 	}
@@ -142,14 +160,13 @@ func (sender *MysqlSecretClient) EventExportToMysql(ctx interfaces.AppFunctionCo
 			return false, err
 		}
 	}
-	stmt, err := sender.client.Prepare(event.sql)
-	defer stmt.Close()
-	if err != nil {
-		return false, fmt.Errorf("prepare sql failed, Error: %s", err.Error())
-	}
-	_, err = stmt.Exec(event.params...)
-	if err != nil {
-		return false, fmt.Errorf("执行sql失败, Error: %s", err.Error())
+	for _, eventItem := range event.events {
+		result, err := sender.executeSql(eventItem.sql, eventItem.params)
+		if err != nil {
+			return false, err
+		} else if !result {
+			return false, fmt.Errorf
+		}
 	}
 	ctx.LoggingClient().Tracef("event inserted", "Transport", "Mysql", "pipeline", ctx.PipelineId(), common.CorrelationHeader, ctx.CorrelationID())
 	return true, nil
