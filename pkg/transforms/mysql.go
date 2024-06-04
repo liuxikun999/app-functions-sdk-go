@@ -44,12 +44,15 @@ type MysqlSecretClient struct {
 
 // MysqlSecretConfig ...
 type MysqlSecretConfig struct {
-	Enable       bool
-	UserName     string
-	Password     string
-	DatabaseName string
-	Host         string
-	Port         int
+	Enable          bool
+	UserName        string
+	Password        string
+	DatabaseName    string
+	Host            string
+	Port            int
+	MaxIdleConns    int
+	MaxOpenConns    int
+	ConnMaxLifetime int // seconds
 	// ClientId to connect with the broker with.
 	ClientId string
 	// The name of the secret in secret provider to retrieve your secrets
@@ -60,10 +63,6 @@ type MysqlSecretConfig struct {
 	KeepAlive string
 	// ConnectTimeout is the duration for timing out on connecting to the broker
 	ConnectTimeout string
-	// QoS for MQTT Connection
-	QoS byte
-	// Retain setting for MQTT Connection
-	Retain bool
 	// AuthMode indicates what to use when connecting to the broker. Options are "none", "cacert" , "usernamepassword", "clientcert".
 	// If a CA Cert exists in the SecretName then it will be used for all modes except "none".
 	AuthMode string
@@ -112,6 +111,15 @@ func (sender *MysqlSecretClient) createMysqlClient() error {
 	db, err := sql.Open("mysql", uri)
 	if err != nil {
 		return fmt.Errorf("could not connect to Mysql server for export. Error: %s", err.Error())
+	}
+	if sender.config.MaxOpenConns > 0 {
+		db.SetMaxOpenConns(sender.config.MaxOpenConns)
+	}
+	if sender.config.MaxIdleConns > 0 {
+		db.SetMaxIdleConns(sender.config.MaxIdleConns)
+	}
+	if sender.config.ConnMaxLifetime > 0 {
+		db.SetConnMaxLifetime(time.Duration(sender.config.ConnMaxLifetime) * time.Second)
 	}
 	sender.client = db
 	fmt.Println("Connected to Mysql server")
