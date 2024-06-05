@@ -57,12 +57,6 @@ type MysqlSecretConfig struct {
 	ClientId string
 	// The name of the secret in secret provider to retrieve your secrets
 	SecretName string
-	// AutoReconnect indicated whether or not to retry connection if disconnected
-	AutoReconnect bool
-	// KeepAlive is the interval duration between client sending keepalive ping to broker
-	KeepAlive string
-	// ConnectTimeout is the duration for timing out on connecting to the broker
-	ConnectTimeout string
 	// AuthMode indicates what to use when connecting to the broker. Options are "none", "cacert" , "usernamepassword", "clientcert".
 	// If a CA Cert exists in the SecretName then it will be used for all modes except "none".
 	AuthMode string
@@ -144,21 +138,11 @@ func (sender *MysqlSecretClient) DisconnectMysqlSecretClient() error {
 }
 
 // executeSql 执行sql
-func (sender *MysqlSecretClient) executeSql(tx *sql.Tx, sql string, params ...interface{}) (sql.Result, error) {
-	// executeSql的实现代码，使用传入的tx执行SQL操作
-	result, err := tx.Exec(sql, params...)
-	if err != nil {
-		// 这里可以根据错误类型进行更细致的错误处理
-		return nil, fmt.Errorf("执行SQL失败: %s, Error: %s", sql, err.Error())
-	}
-	return result, nil
-}
-
-// handleSingleSqlEvent处理单条sql事件，现在使用事务来保证数据的一致性
-func (sender *MysqlSecretClient) handleSingleSqlEvent(data ExecuteSQLParams) (bool, error) {
+func (sender *MysqlSecretClient) executeSql(sql string, params ...interface{}) (sql.Result, error) {
+	// executeSql的实现代码
 	tx, err := sender.client.Begin()
 	if err != nil {
-		return false, fmt.Errorf("开始事务失败: %s", err.Error())
+		return nil, fmt.Errorf("开始事务失败: %s", err.Error())
 	}
 	defer func() {
 		if p := recover(); p != nil {
@@ -170,9 +154,18 @@ func (sender *MysqlSecretClient) handleSingleSqlEvent(data ExecuteSQLParams) (bo
 			err = tx.Commit() // 否则提交事务
 		}
 	}()
+	result, err := tx.Exec(sql, params...)
+	if err != nil {
+		// 这里可以根据错误类型进行更细致的错误处理
+		return nil, fmt.Errorf("执行SQL失败: %s, Error: %s", sql, err.Error())
+	}
+	return result, nil
+}
 
+// HandleSingleSqlEvent 处理单条sql事件，现在使用事务来保证数据的一致性
+func (sender *MysqlSecretClient) HandleSingleSqlEvent(data ExecuteSQLParams) (bool, error) {
 	if data.IsCheckExist {
-		rows, err := tx.Query(data.CheckExistSql, data.CheckExistParams...)
+		rows, err := sender.client.Query(data.CheckExistSql, data.CheckExistParams...)
 		if err != nil {
 			return false, fmt.Errorf("执行查询失败: %s", err.Error())
 		}
@@ -180,20 +173,20 @@ func (sender *MysqlSecretClient) handleSingleSqlEvent(data ExecuteSQLParams) (bo
 
 		if rows.Next() {
 			// 如果查询到数据，执行更新操作
-			_, err := sender.executeSql(tx, data.UpdateSql, data.UpdateParams...)
+			_, err := sender.executeSql(data.UpdateSql, data.UpdateParams...)
 			if err != nil {
 				return false, fmt.Errorf("执行更新失败: %s", err.Error())
 			}
 		} else {
 			// 没有查询到数据，执行插入操作
-			_, err := sender.executeSql(tx, data.InsertSql, data.InsertParams...)
+			_, err := sender.executeSql(data.InsertSql, data.InsertParams...)
 			if err != nil {
 				return false, fmt.Errorf("执行插入失败: %s", err.Error())
 			}
 		}
 	} else {
 		// 直接执行插入操作
-		_, err := sender.executeSql(tx, data.InsertSql, data.InsertParams...)
+		_, err := sender.executeSql(data.InsertSql, data.InsertParams...)
 		if err != nil {
 			return false, fmt.Errorf("执行插入失败: %s", err.Error())
 		}
@@ -219,7 +212,7 @@ func (sender *MysqlSecretClient) EventExportToMysql(ctx interfaces.AppFunctionCo
 		}
 	}
 	for _, eventItem := range event.SQLParams {
-		result, err := sender.handleSingleSqlEvent(eventItem)
+		result, err := sender.HandleSingleSqlEvent(eventItem)
 		if err != nil {
 			return false, err
 		} else if !result {
