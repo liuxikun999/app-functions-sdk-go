@@ -69,12 +69,17 @@ type MysqlSecretConfig struct {
 }
 
 type ExecuteSQLEvent struct {
-	events []ExecuteSQLParams
+	SQLParams []ExecuteSQLParams
 }
 
 type ExecuteSQLParams struct {
-	sql    string
-	params []interface{}
+	InsertSql        string
+	InsertParams     []interface{}
+	UpdateSql        string
+	UpdateParams     []interface{}
+	CheckExistSql    string
+	CheckExistParams []interface{}
+	IsCheckExist     bool // 是否需要判断数据已存在，如果已存在则更新，不存在则插入；如果不判断则直接插入
 }
 
 // NewMysqlSecretClient ...
@@ -139,16 +144,61 @@ func (sender *MysqlSecretClient) DisconnectMysqlSecretClient() error {
 }
 
 // executeSql 执行sql
-func (sender *MysqlSecretClient) executeSql(sql string, params []interface{}) (bool, error) {
-	stmt, err := sender.client.Prepare(sql)
-	defer stmt.Close()
+func (sender *MysqlSecretClient) executeSql(tx *sql.Tx, sql string, params ...interface{}) (sql.Result, error) {
+	// executeSql的实现代码，使用传入的tx执行SQL操作
+	result, err := tx.Exec(sql, params...)
 	if err != nil {
-		return false, fmt.Errorf("prepare sql failed, Error: %s", err.Error())
+		// 这里可以根据错误类型进行更细致的错误处理
+		return nil, fmt.Errorf("执行SQL失败: %s, Error: %s", sql, err.Error())
 	}
-	_, err = stmt.Exec(params...)
+	return result, nil
+}
+
+// handleSingleSqlEvent处理单条sql事件，现在使用事务来保证数据的一致性
+func (sender *MysqlSecretClient) handleSingleSqlEvent(data ExecuteSQLParams) (bool, error) {
+	tx, err := sender.client.Begin()
 	if err != nil {
-		return false, fmt.Errorf("执行sql失败, Error: %s", err.Error())
+		return false, fmt.Errorf("开始事务失败: %s", err.Error())
 	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p) // 重新抛出panic
+		} else if err != nil {
+			tx.Rollback() // 如果有错误发生，回滚事务
+		} else {
+			err = tx.Commit() // 否则提交事务
+		}
+	}()
+
+	if data.IsCheckExist {
+		rows, err := tx.Query(data.CheckExistSql, data.CheckExistParams...)
+		if err != nil {
+			return false, fmt.Errorf("执行查询失败: %s", err.Error())
+		}
+		defer rows.Close()
+
+		if rows.Next() {
+			// 如果查询到数据，执行更新操作
+			_, err := sender.executeSql(tx, data.UpdateSql, data.UpdateParams...)
+			if err != nil {
+				return false, fmt.Errorf("执行更新失败: %s", err.Error())
+			}
+		} else {
+			// 没有查询到数据，执行插入操作
+			_, err := sender.executeSql(tx, data.InsertSql, data.InsertParams...)
+			if err != nil {
+				return false, fmt.Errorf("执行插入失败: %s", err.Error())
+			}
+		}
+	} else {
+		// 直接执行插入操作
+		_, err := sender.executeSql(tx, data.InsertSql, data.InsertParams...)
+		if err != nil {
+			return false, fmt.Errorf("执行插入失败: %s", err.Error())
+		}
+	}
+
 	return true, nil
 }
 
@@ -168,8 +218,8 @@ func (sender *MysqlSecretClient) EventExportToMysql(ctx interfaces.AppFunctionCo
 			return false, err
 		}
 	}
-	for _, eventItem := range event.events {
-		result, err := sender.executeSql(eventItem.sql, eventItem.params)
+	for _, eventItem := range event.SQLParams {
+		result, err := sender.handleSingleSqlEvent(eventItem)
 		if err != nil {
 			return false, err
 		} else if !result {
