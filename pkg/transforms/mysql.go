@@ -140,7 +140,21 @@ func (sender *MysqlSecretClient) DisconnectMysqlSecretClient() error {
 // executeSql 执行sql
 func (sender *MysqlSecretClient) executeSql(sql string, params ...interface{}) (sql.Result, error) {
 	// executeSql的实现代码
-	result, err := sender.client.Exec(sql, params...)
+	tx, err := sender.client.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("开始事务失败: %s", err.Error())
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p) // 重新抛出panic
+		} else if err != nil {
+			tx.Rollback() // 如果有错误发生，回滚事务
+		} else {
+			err = tx.Commit() // 否则提交事务
+		}
+	}()
+	result, err := tx.Exec(sql, params...)
 	if err != nil {
 		// 这里可以根据错误类型进行更细致的错误处理
 		return nil, fmt.Errorf("执行SQL失败: %s, Error: %s", sql, err.Error())
