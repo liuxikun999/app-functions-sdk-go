@@ -197,6 +197,8 @@ func (sender *MysqlSecretClient) HandleSingleSqlEvent(data ExecuteSQLParams) (bo
 
 // EventExportToMysql 备份事件到mysql
 func (sender *MysqlSecretClient) EventExportToMysql(ctx interfaces.AppFunctionContext, data interface{}) (bool, interface{}) {
+	sender.lock.Lock()
+	defer sender.lock.Unlock()
 	if data == nil {
 		// We didn't receive a result
 		return false, fmt.Errorf("function EventExportToMysql in pipeline '%s': No Data Received", ctx.PipelineId())
