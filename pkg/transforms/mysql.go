@@ -140,7 +140,7 @@ func (sender *MysqlSecretClient) DisconnectMysqlSecretClient() error {
 // executeSql 执行sql
 func (sender *MysqlSecretClient) executeSql(sql string, params ...interface{}) (sql.Result, error) {
 	// executeSql的实现代码
-	result, err := sender.client.Exec(sql, params)
+	result, err := sender.client.Exec(sql, params...)
 	if err != nil {
 		// 这里可以根据错误类型进行更细致的错误处理
 		return nil, fmt.Errorf("执行SQL失败: %s, Error: %s", sql, err.Error())
